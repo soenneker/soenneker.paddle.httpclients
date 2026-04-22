@@ -1,20 +1,19 @@
 using Soenneker.Paddle.HttpClients.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Paddle.HttpClients.Tests;
 
-[Collection("Collection")]
-public sealed class PaddleOpenApiHttpClientTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class PaddleOpenApiHttpClientTests : HostedUnitTest
 {
     private readonly IPaddleOpenApiHttpClient _httpclient;
 
-    public PaddleOpenApiHttpClientTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public PaddleOpenApiHttpClientTests(Host host) : base(host)
     {
         _httpclient = Resolve<IPaddleOpenApiHttpClient>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
