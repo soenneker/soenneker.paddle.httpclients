@@ -56,7 +56,7 @@ jobs:
         run: dotnet build test/Soenneker.Paddle.HttpClients.Tests/Soenneker.Paddle.HttpClients.Tests.csproj --configuration Release --no-restore --verbosity minimal
 
       - name: Test
-        run: dotnet test test/Soenneker.Paddle.HttpClients.Tests/Soenneker.Paddle.HttpClients.Tests.csproj --configuration Release --no-build --no-restore --verbosity normal
+        run: dotnet test --project test/Soenneker.Paddle.HttpClients.Tests/Soenneker.Paddle.HttpClients.Tests.csproj --configuration Release --no-build --no-restore --verbosity normal
 
 
       - name: Restore library
