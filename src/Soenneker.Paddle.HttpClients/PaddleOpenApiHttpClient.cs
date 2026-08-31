@@ -11,11 +11,11 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Paddle.HttpClients;
 
-///<inheritdoc cref="IPaddleOpenApiHttpClient"/>
 public sealed class PaddleOpenApiHttpClient : IPaddleOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
+    private readonly string _clientId = $"{nameof(PaddleOpenApiHttpClient)}:{Guid.NewGuid():N}";
 
     private const string _prodBaseUrl = "https://api.paddle.com";
 
@@ -27,12 +27,13 @@ public sealed class PaddleOpenApiHttpClient : IPaddleOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(PaddleOpenApiHttpClient), (config: _config, baseUrl: _config["Paddle:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["Paddle:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("Paddle:ApiKey");
             string authHeaderName = state.config["Paddle:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["Paddle:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
+            string apiVersion = state.config["Paddle:ApiVersion"] ?? "1";
 
             return new HttpClientOptions
             {
@@ -40,25 +41,19 @@ public sealed class PaddleOpenApiHttpClient : IPaddleOpenApiHttpClient
                 DefaultRequestHeaders = new Dictionary<string, string>
                 {
                     {authHeaderName, authHeaderValue},
+                    {"Paddle-Version", apiVersion},
                 }
             };
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(PaddleOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_clientId);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(PaddleOpenApiHttpClient));
+        return _httpClientCache.Remove(_clientId);
     }
 }
