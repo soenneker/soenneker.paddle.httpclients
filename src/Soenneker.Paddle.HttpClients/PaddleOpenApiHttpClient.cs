@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Paddle.HttpClients;
 
+/// <inheritdoc cref="IPaddleOpenApiHttpClient" />
 public sealed class PaddleOpenApiHttpClient : IPaddleOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
