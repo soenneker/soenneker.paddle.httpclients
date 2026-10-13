@@ -30,7 +30,7 @@ public sealed class PaddleOpenApiHttpClient : IPaddleOpenApiHttpClient
     {
         return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["Paddle:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("Paddle:ApiKey");
+            var apiKey = state.config.GetStringStrict("Paddle:ApiKey");
             string authHeaderName = state.config["Paddle:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["Paddle:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
